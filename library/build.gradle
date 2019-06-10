@@ -29,7 +29,6 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.nineoldandroids:library:2.4.0'
 }
 
 def siteUrl = 'https://github.com/ta893115871/PagerSlidingTabStrip'    // 项目的主页

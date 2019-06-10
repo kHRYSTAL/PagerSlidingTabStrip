@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
@@ -22,8 +23,6 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.nineoldandroids.view.ViewHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -263,6 +262,25 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
             @Override
             public void onClick(View v) {
                 mFadeEnabled = false;//点击时没有文字颜色渐变效果
+
+                //set old view statue
+                ViewCompat.setAlpha(tabViews.get(oldPosition).get("normal"), 1);
+                ViewCompat.setAlpha(tabViews.get(oldPosition).get("selected"), 0);
+                View v_old = tabsContainer.getChildAt(oldPosition);
+                ViewCompat.setPivotX(v_old, v_old.getMeasuredWidth() * 0.5f);
+                ViewCompat.setPivotY(v_old, v_old.getMeasuredHeight() * 0.5f);
+                ViewCompat.setScaleX(v_old, 1f);
+                ViewCompat.setScaleY(v_old, 1f);
+                //set new view statue
+                ViewCompat.setAlpha(tabViews.get(position).get("normal"), 0);
+                ViewCompat.setAlpha(tabViews.get(position).get("selected"), 1);
+                View v_new = tabsContainer.getChildAt(position);
+                ViewCompat.setPivotX(v_new, v_new.getMeasuredWidth() * 0.5f);
+                ViewCompat.setPivotY(v_new, v_new.getMeasuredHeight() * 0.5f);
+                ViewCompat.setScaleX(v_new, 1 + zoomMax);
+                ViewCompat.setScaleY(v_new, 1 + zoomMax);
+                oldPosition = selectedPosition;
+
                 pager.setCurrentItem(position, smoothScrollWhenClickTab);
                 currentPosition = position;
                 scrollToChild(position, 0);//滚动HorizontalScrollView
@@ -272,10 +290,10 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 
         Map<String, View> map = new HashMap<>();
 
-        ViewHelper.setAlpha(tab, 1);
+        ViewCompat.setAlpha(tab, 1);
         map.put("normal", tab);
 
-        ViewHelper.setAlpha(tab2, 0);
+        ViewCompat.setAlpha(tab2, 0);
         map.put("selected", tab2);
 
         tabViews.add(position, map);
@@ -297,14 +315,12 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
                     } else {
                         tab.setTextColor(selectedTabTextColor);
                     }
-                    ViewHelper.setAlpha(tabViews.get(i).get("normal"), 1);
-                    ViewHelper.setAlpha(tabViews.get(i).get("selected"), 0);
+                    ViewCompat.setAlpha(tabViews.get(i).get("normal"), 1);
+                    ViewCompat.setAlpha(tabViews.get(i).get("selected"), 0);
 
                     //set normal  Scale
-                    ViewHelper.setPivotX(frameLayout, frameLayout.getMeasuredWidth() * 0.5f);
-                    ViewHelper.setPivotY(frameLayout, frameLayout.getMeasuredHeight() * 0.5f);
-                    ViewHelper.setScaleX(frameLayout, 1f);
-                    ViewHelper.setScaleY(frameLayout, 1f);
+                    ViewCompat.setScaleX(frameLayout, 1f);
+                    ViewCompat.setScaleY(frameLayout, 1f);
 
                     // setAllCaps() is only available from API 14, so the upper case is made manually if we are on a
                     // pre-ICS-build
@@ -316,14 +332,12 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
                         }
                     }
                     if (i == selectedPosition) {
-                        ViewHelper.setAlpha(tabViews.get(i).get("normal"), 0);
-                        ViewHelper.setAlpha(tabViews.get(i).get("selected"), 1);
+                        ViewCompat.setAlpha(tabViews.get(i).get("normal"), 0);
+                        ViewCompat.setAlpha(tabViews.get(i).get("selected"), 1);
 
                         //set select  Scale
-                        ViewHelper.setPivotX(frameLayout, frameLayout.getMeasuredWidth() * 0.5f);
-                        ViewHelper.setPivotY(frameLayout, frameLayout.getMeasuredHeight() * 0.5f);
-                        ViewHelper.setScaleX(frameLayout, 1 + zoomMax);
-                        ViewHelper.setScaleY(frameLayout, 1 + zoomMax);
+                        ViewCompat.setScaleX(frameLayout, 1 + zoomMax);
+                        ViewCompat.setScaleY(frameLayout, 1 + zoomMax);
                     }
                 }
             }
@@ -396,8 +410,9 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
         }
     }
 
+    private int oldPosition = 0;
+
     private class PageListener implements OnPageChangeListener {
-        private int oldPosition = 0;
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -457,22 +472,12 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
             selectedPosition = position;
 
             //set old view statue
-            ViewHelper.setAlpha(tabViews.get(oldPosition).get("normal"), 1);
-            ViewHelper.setAlpha(tabViews.get(oldPosition).get("selected"), 0);
-            View v_old = tabsContainer.getChildAt(oldPosition);
-            ViewHelper.setPivotX(v_old, v_old.getMeasuredWidth() * 0.5f);
-            ViewHelper.setPivotY(v_old, v_old.getMeasuredHeight() * 0.5f);
-            ViewHelper.setScaleX(v_old, 1f);
-            ViewHelper.setScaleY(v_old, 1f);
+            ViewCompat.setAlpha(tabViews.get(oldPosition).get("normal"), 1);
+            ViewCompat.setAlpha(tabViews.get(oldPosition).get("selected"), 0);
 
             //set new view statue
-            ViewHelper.setAlpha(tabViews.get(position).get("normal"), 0);
-            ViewHelper.setAlpha(tabViews.get(position).get("selected"), 1);
-            View v_new = tabsContainer.getChildAt(position);
-            ViewHelper.setPivotX(v_new, v_new.getMeasuredWidth() * 0.5f);
-            ViewHelper.setPivotY(v_new, v_new.getMeasuredHeight() * 0.5f);
-            ViewHelper.setScaleX(v_new, 1 + zoomMax);
-            ViewHelper.setScaleY(v_new, 1 + zoomMax);
+            ViewCompat.setAlpha(tabViews.get(position).get("normal"), 0);
+            ViewCompat.setAlpha(tabViews.get(position).get("selected"), 1);
 
             if (delegatePageListener != null) {
                 delegatePageListener.onPageSelected(position);
@@ -722,22 +727,22 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
     protected void animateFadeScale(View left, View right, float positionOffset, int position) {
         if (mState != State.IDLE) {
             if (left != null) {
-                ViewHelper.setAlpha(tabViews.get(position).get("normal"), positionOffset);
-                ViewHelper.setAlpha(tabViews.get(position).get("selected"), 1 - positionOffset);
+                ViewCompat.setAlpha(tabViews.get(position).get("normal"), positionOffset);
+                ViewCompat.setAlpha(tabViews.get(position).get("selected"), 1 - positionOffset);
                 float mScale = 1 + zoomMax - zoomMax * positionOffset;
-                ViewHelper.setPivotX(left, left.getMeasuredWidth() * 0.5f);
-                ViewHelper.setPivotY(left, left.getMeasuredHeight() * 0.5f);
-                ViewHelper.setScaleX(left, mScale);
-                ViewHelper.setScaleY(left, mScale);
+                ViewCompat.setPivotX(left, left.getMeasuredWidth() * 0.5f);
+                ViewCompat.setPivotY(left, left.getMeasuredHeight() * 0.5f);
+                ViewCompat.setScaleX(left, mScale);
+                ViewCompat.setScaleY(left, mScale);
             }
             if (right != null) {
-                ViewHelper.setAlpha(tabViews.get(position + 1).get("normal"), 1 - positionOffset);
-                ViewHelper.setAlpha(tabViews.get(position + 1).get("selected"), positionOffset);
+                ViewCompat.setAlpha(tabViews.get(position + 1).get("normal"), 1 - positionOffset);
+                ViewCompat.setAlpha(tabViews.get(position + 1).get("selected"), positionOffset);
                 float mScale = 1 + zoomMax * positionOffset;
-                ViewHelper.setPivotX(right, right.getMeasuredWidth() * 0.5f);
-                ViewHelper.setPivotY(right, right.getMeasuredHeight() * 0.5f);
-                ViewHelper.setScaleX(right, mScale);
-                ViewHelper.setScaleY(right, mScale);
+                ViewCompat.setPivotX(right, right.getMeasuredWidth() * 0.5f);
+                ViewCompat.setPivotY(right, right.getMeasuredHeight() * 0.5f);
+                ViewCompat.setScaleX(right, mScale);
+                ViewCompat.setScaleY(right, mScale);
             }
         }
     }
